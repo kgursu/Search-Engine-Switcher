@@ -75,8 +75,14 @@ function iconUrl(id) {
 }
 
 function getAllEngines(customs) {
+    const overrides = window._urlOverrides || {}
     return [
-        ...BUILTIN_ENGINES.map(e => ({...e, iconUrl: iconUrl(e.id), isCustom: false})),
+        ...BUILTIN_ENGINES.map(e => ({
+            ...e,
+            iconUrl: iconUrl(e.id),
+            isCustom: false,
+            queryUrl: overrides[e.id] || e.queryUrl
+        })),
         ...(customs || []).map(e => ({...e, iconUrl: null, isCustom: true})),
     ]
 }
