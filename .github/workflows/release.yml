@@ -1,0 +1,44 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Chrome zip
+        run: |
+          cd chrome
+          zip -r ../switch-search-engine-chrome.zip . -x "*.DS_Store"
+
+      - name: Build Firefox zip
+        run: |
+          cd firefox
+          zip -r ../switch-search-engine-firefox.zip . -x "*.DS_Store"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: |
+            switch-search-engine-chrome.zip
+            switch-search-engine-firefox.zip
+          body: |
+            ## Installation
+
+            **Chrome / Opera / Edge:**
+            1. Download `switch-search-engine-chrome.zip` and extract it
+            2. Go to `chrome://extensions` → Enable Developer mode → Load unpacked → select the extracted folder
+            3. Enable "Allow access to search page results" on the extensions page
+
+            **Firefox:**
+            Download `switch-search-engine-firefox.zip` — installation requires signing via [addons.mozilla.org](https://addons.mozilla.org).
