@@ -1,17 +1,11 @@
 const btn  = document.getElementById('btn-open-ext')
 const stat = document.getElementById('status')
+const isOpera = navigator.userAgent.includes('OPR/')
 
 async function checkPermission() {
     return new Promise(resolve => {
-        chrome.storage.sync.get('contentScriptPermissionGranted', d => {
-            resolve(!!(d && d.contentScriptPermissionGranted))
-        })
+        chrome.permissions.contains({ origins: ['*://duckduckgo.com/*', '*://www.google.com/*'] }, resolve)
     })
-}
-
-async function init() {
-    const granted = await checkPermission()
-    if (granted) showGranted()
 }
 
 function showGranted() {
@@ -22,14 +16,25 @@ function showGranted() {
     stat.className = 'status ok'
 }
 
+async function init() {
+    if (!isOpera) {
+        // Non-Opera browsers: skip permission step, just show pin instruction
+        document.getElementById('step-permission').style.display = 'none'
+        return
+    }
+    const granted = await checkPermission()
+    if (granted) showGranted()
+}
+
 btn.addEventListener('click', () => {
     chrome.tabs.create({ url: `chrome://extensions/?id=${chrome.runtime.id}` })
-    stat.textContent = 'Extensions page opened. Enable "Allow access to search page results" then visit any search page.'
+    stat.textContent = 'Extensions page opened. Enable "Allow access to search page results" then come back.'
 })
 
-// Poll for permission flag
+// Poll for permission (Opera only)
 let pollCount = 0
 const poll = setInterval(async () => {
+    if (!isOpera) { clearInterval(poll); return }
     if (await checkPermission()) { showGranted(); clearInterval(poll) }
     if (++pollCount > 60) clearInterval(poll)
 }, 1000)

@@ -1,6 +1,6 @@
 # Switch Search Engine
 
-A browser extension to switch between search engines in one click. Supports custom engines you define yourself.
+A browser extension to switch between search engines in one click. Add, edit, and reorder engines to match your preferences.
 
 ![Icon](chrome/img/icon128.png)
 
@@ -9,7 +9,7 @@ A browser extension to switch between search engines in one click. Supports cust
 - Switch between search engines instantly from a float bar at the bottom of search result pages
 - Toolbar button cycles to the next enabled engine
 - Enable, disable, and reorder engines from the settings page
-- Add custom engines with any URL template using `{}` as the query placeholder
+- Add, edit, or remove custom and built-in engines
 - Adjustable icon size with live preview
 - Works on Chrome, Opera, Edge, and Firefox (desktop + Android)
 
@@ -40,15 +40,19 @@ Install from [addons.mozilla.org](https://addons.mozilla.org) once the extension
 | Chrome / Opera / Edge | Configurable via `chrome://extensions/shortcuts` |
 | Firefox | `Ctrl+Alt+S` |
 
-## Adding a custom engine
+## Managing search engines
 
-1. Open the extension settings
-2. Go to the **Search Engines** tab
-3. Fill in the **Add Custom Engine** form:
-   - **Name**: display name (e.g. `Kagi`)
-   - **Hostname**: domain without protocol (e.g. `kagi.com`)
-   - **Search URL**: full URL with `{}` where the query goes (e.g. `https://kagi.com/search?q={}`)
-4. Click **Add Engine** — it will be enabled automatically
+**Add a custom engine:**
+1. Open the extension settings → **Search Engines** tab
+2. Fill in the form at the bottom: name, hostname, and search URL with `{}` as the query placeholder (e.g. `https://kagi.com/search?q={}`)
+3. Click **Add Engine** — it will be enabled automatically
+
+**Edit an engine:**
+1. Select any engine from either list
+2. Click **Edit**
+3. For built-in engines, only the search URL can be changed. Click **Reset to Default URL** to restore the original.
+4. For custom engines, all fields are editable
+5. Click **Save Changes**
 
 ## Project structure
 
@@ -63,7 +67,7 @@ This project is a fork of [kuanyui/EngineSwitcher](https://github.com/kuanyui/En
 
 Changes from the original:
 - Ported to Chrome/Opera/Edge (Manifest V3)
-- Added custom engine support
+- Added custom engine support with add, edit, and URL override for built-in engines
 - New settings UI with tabs and live preview
 - Adjustable float bar icon size
 - Onboarding page for first-time setup

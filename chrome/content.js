@@ -166,6 +166,6 @@ init() {
 // _getArea must be available (loaded via common.js before content.js)
 
 // Mark that content script has run (permission is granted)
-chrome.storage.sync.set({ contentScriptPermissionGranted: true })
+_getArea().set({ contentScriptPermissionGranted: true })
 
 init()

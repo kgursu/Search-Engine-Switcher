@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Switch Search Engine",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Switch between search engines in one click. Supports custom engines.",
     "icons": {
         "16": "img/icon16.png",

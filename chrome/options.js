@@ -35,6 +35,7 @@ const DEFAULT_STORAGE = {
     enabledEngines: ['duckduckgo','ecosia','brave','yandex-en','bing','google'],
     customEngines: [],
     floatButton: { enabled: true, iconSize: 20 },
+    engineUrlOverrides: {},
     extra: { ecosiaEliminateNotifications: false },
 }
 
@@ -85,6 +86,7 @@ function getAllEngines(customs) {
 let selectedId = null
 let enabledIds = []
 let customEngines = []
+let editingId = null  // id of engine currently being edited
 
 const allEngines = () => getAllEngines(customEngines)
 const engineById = id => allEngines().find(e => e.id === id)
@@ -144,12 +146,14 @@ function makeLi(engine, isEnabled, orderNo) {
 }
 
 function renderButtons() {
-    ['btn-enable','btn-disable','btn-top','btn-up','btn-down','btn-bottom','btn-delete-custom']
+    ['btn-enable','btn-disable','btn-top','btn-up','btn-down','btn-bottom','btn-delete-custom','btn-edit-custom']
         .forEach(id => document.getElementById(id).disabled = true)
     if (!selectedId) return
     const isEnabled = enabledIds.includes(selectedId)
     const engine = engineById(selectedId)
     if (!engine) return
+    // Edit is available for all engines
+    document.getElementById('btn-edit-custom').disabled = false
     if (!isEnabled) {
         document.getElementById('btn-enable').disabled = false
         if (engine.isCustom) document.getElementById('btn-delete-custom').disabled = false
@@ -193,25 +197,86 @@ function actDeleteCustom() {
     selectedId = null
     persist(); renderLists()
 }
+function clearForm() {
+    editingId = null
+    document.getElementById('cf-name').value = ''
+    document.getElementById('cf-hostname').value = ''
+    document.getElementById('cf-url').value = ''
+    document.getElementById('cf-name').disabled = false
+    document.getElementById('cf-hostname').disabled = false
+    document.getElementById('btn-add-custom').textContent = 'Add Engine'
+    document.getElementById('btn-reset-default').style.display = 'none'
+    document.getElementById('btn-cancel-edit').style.display = 'none'
+}
+
+function actEdit() {
+    if (!selectedId) return
+    const engine = engineById(selectedId)
+    if (!engine) return
+    editingId = selectedId
+    document.getElementById('cf-name').value = engine.name
+    document.getElementById('cf-hostname').value = engine.hostname
+    document.getElementById('cf-url').value = engine.queryUrl
+    document.getElementById('btn-add-custom').textContent = 'Save Changes'
+    document.getElementById('btn-cancel-edit').style.display = 'inline-flex'
+    if (!engine.isCustom) {
+        document.getElementById('cf-name').disabled = true
+        document.getElementById('cf-hostname').disabled = true
+        document.getElementById('btn-reset-default').style.display = 'inline-flex'
+    } else {
+        document.getElementById('cf-name').disabled = false
+        document.getElementById('cf-hostname').disabled = false
+        document.getElementById('btn-reset-default').style.display = 'none'
+    }
+    document.getElementById('cf-url').focus()
+}
+
+function actResetDefaultUrl() {
+    if (!editingId) return
+    const builtin = BUILTIN_ENGINES.find(e => e.id === editingId)
+    if (builtin) document.getElementById('cf-url').value = builtin.queryUrl
+}
+
 function actAddCustom() {
     const name     = document.getElementById('cf-name').value.trim()
     const hostname = document.getElementById('cf-hostname').value.trim().replace(/^https?:\/\//,'').replace(/\/$/,'')
     const url      = document.getElementById('cf-url').value.trim()
     const msg      = document.getElementById('cf-msg')
-    if (!name || !hostname || !url) { msg.className='form-msg err'; msg.textContent='All fields required.'; return }
-    if (!url.includes('{}'))        { msg.className='form-msg err'; msg.textContent='URL must contain {}.'; return }
+
+    if (!url.includes('{}')) { msg.className='form-msg err'; msg.textContent='URL must contain {}.'; return }
     try { new URL(url.replace('{}','test')) } catch(e) { msg.className='form-msg err'; msg.textContent='Invalid URL.'; return }
+
+    if (editingId) {
+        const engine = engineById(editingId)
+        if (!engine) return
+        if (engine.isCustom) {
+            if (!name || !hostname) { msg.className='form-msg err'; msg.textContent='All fields required.'; return }
+            if (allEngines().find(e => e.hostname === hostname && e.id !== editingId)) {
+                msg.className='form-msg err'; msg.textContent='Hostname already exists.'; return
+            }
+            const idx = customEngines.findIndex(e => e.id === editingId)
+            if (idx !== -1) customEngines[idx] = { ...customEngines[idx], name, hostname, queryUrl: url }
+            persist()
+        } else {
+            window._urlOverrides = { ...(window._urlOverrides || {}), [editingId]: url }
+            saveStorage({ engineUrlOverrides: window._urlOverrides })
+        }
+        renderLists(); clearForm()
+        msg.className='form-msg ok'; msg.textContent='Saved.'
+        setTimeout(() => { msg.textContent='' }, 2000)
+        return
+    }
+
+    if (!name || !hostname || !url) { msg.className='form-msg err'; msg.textContent='All fields required.'; return }
     if (allEngines().find(e => e.hostname === hostname)) { msg.className='form-msg err'; msg.textContent='Hostname already exists.'; return }
     const id = 'custom_' + hostname.replace(/[^a-z0-9]/gi,'_').toLowerCase() + '_' + Date.now()
     customEngines.push({ id, name, hostname, queryUrl: url })
     enabledIds.push(id)
-    persist(); renderLists()
-    document.getElementById('cf-name').value = ''
-    document.getElementById('cf-hostname').value = ''
-    document.getElementById('cf-url').value = ''
+    persist(); renderLists(); clearForm()
     msg.className='form-msg ok'; msg.textContent=`"${name}" added.`
     setTimeout(() => { msg.textContent='' }, 3000)
 }
+
 
 // ─── Preview ──────────────────────────────────────────────────────────────────
 
@@ -234,9 +299,17 @@ function updatePreview(size) {
 
 // ─── Permission banner ────────────────────────────────────────────────────────
 
+function isOpera() {
+    return navigator.userAgent.includes('OPR/')
+}
+
 function checkAndShowBanner() {
     const banner = document.getElementById('perm-banner')
-    // content.js writes this flag to sync storage when it first runs
+    if (!isOpera()) {
+        banner.classList.remove('visible')
+        return
+    }
+    // On Opera: check storage flag written by content script
     const area = chrome.storage.sync || chrome.storage.local
     area.get('contentScriptPermissionGranted', d => {
         if (d && d.contentScriptPermissionGranted) {
@@ -249,6 +322,13 @@ function checkAndShowBanner() {
 
 document.getElementById('btn-grant-banner').addEventListener('click', () => {
     chrome.tabs.create({ url: `chrome://extensions/?id=${chrome.runtime.id}` })
+})
+
+// Listen for storage changes — hide banner as soon as content script sets the flag
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (changes.contentScriptPermissionGranted && changes.contentScriptPermissionGranted.newValue) {
+        document.getElementById('perm-banner').classList.remove('visible')
+    }
 })
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
@@ -271,7 +351,10 @@ document.getElementById('btn-up').onclick            = () => actMove('up')
 document.getElementById('btn-down').onclick          = () => actMove('down')
 document.getElementById('btn-bottom').onclick        = () => actMove('bottom')
 document.getElementById('btn-delete-custom').onclick = actDeleteCustom
+document.getElementById('btn-edit-custom').onclick   = actEdit
 document.getElementById('btn-add-custom').onclick    = actAddCustom
+document.getElementById('btn-reset-default').onclick = actResetDefaultUrl
+document.getElementById('btn-cancel-edit').onclick   = clearForm
 
 document.getElementById('float-enabled').addEventListener('change', e => {
     saveStorage({ floatButton: { enabled: e.target.checked, iconSize: currentIconSize() } })
@@ -316,6 +399,7 @@ async function init() {
     const data = await loadStorage()
     enabledIds    = [...(data.enabledEngines || DEFAULT_STORAGE.enabledEngines)]
     customEngines = [...(data.customEngines  || [])]
+    window._urlOverrides = data.engineUrlOverrides || {}
     const iconSize = data.floatButton?.iconSize ?? 20
     document.getElementById('float-enabled').checked = data.floatButton?.enabled ?? true
     document.getElementById('ecosia-notif').checked  = data.extra?.ecosiaEliminateNotifications ?? false

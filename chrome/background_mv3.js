@@ -61,7 +61,10 @@ async function storageGet() {
 
 async function getEnabledEngines() {
     const data = await storageGet()
-    const all = getAllEngines(data.customEngines || [])
+    const overrides = data.engineUrlOverrides || {}
+    const all = getAllEngines(data.customEngines || []).map(e =>
+        overrides[e.id] ? {...e, queryUrl: overrides[e.id]} : e
+    )
     return (data.enabledEngines || ['duckduckgo','ecosia','brave','yandex-en','bing','google'])
         .map(id => all.find(e => e.id === id))
         .filter(Boolean)

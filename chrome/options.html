@@ -11,6 +11,14 @@
     --accent:#5b8dee; --accent2:#7ba7f5; --danger:#e05c5c;
     --green:#5cb87a; --radius:6px; --font:system-ui,-apple-system,sans-serif;
 }
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg:#f5f5f7; --bg2:#ffffff; --bg3:#eaeaec; --bg-hover:#e0e0e5;
+        --bg-active:#d5d5e0; --bd:#d0d0d8; --fg:#1a1a2e; --fg2:#5a5a7a;
+        --accent:#3b6fd4; --accent2:#2d5bbf; --danger:#c0392b;
+        --green:#27ae60;
+    }
+}
 body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:14px; min-width:640px; padding:24px; line-height:1.5; }
 h1 { font-size:18px; font-weight:600; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
 h1 img { width:32px; height:32px; border-radius:8px; }
@@ -124,7 +132,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
 <div class="perm-banner" id="perm-banner">
     <div class="perm-banner-text">
         <strong>⚠ Search page access not granted.</strong>
-        The float bar won't appear until you enable "Allow access to search page results" in the Extensions page.
+        Enable "Allow access to search page results" in the Extensions page, then visit any search page once. This banner will close automatically.
     </div>
     <button class="btn-grant" id="btn-grant-banner">Open Extensions Page</button>
 </div>
@@ -155,6 +163,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
             <button id="btn-bottom" disabled>⇊ Bottom</button>
             <div class="act-sep"></div>
             <button id="btn-delete-custom" class="danger" disabled>🗑 Delete</button>
+            <button id="btn-edit-custom" disabled>✎ Edit</button>
         </div>
         <div>
             <div class="engine-table-wrap">
@@ -164,7 +173,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
         </div>
     </div>
     <div class="custom-form">
-        <h3>Add Custom Engine</h3>
+        <h3 id="custom-form-title">Add / Edit Search Engine</h3>
         <div class="form-grid">
             <div class="form-group">
                 <label for="cf-name">Name</label>
@@ -175,12 +184,14 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; h
                 <input type="text" id="cf-hostname" placeholder="e.g. kagi.com">
             </div>
             <div class="form-group" style="grid-column:1/-1">
-                <label for="cf-url">Search URL (use <code>{}</code> for the query)</label>
+                <label for="cf-url">Search URL <span style="font-weight:400;color:var(--fg2)">(use <code>{}</code> for the query)</span></label>
                 <input type="text" id="cf-url" placeholder="e.g. https://kagi.com/search?q={}">
             </div>
         </div>
         <div class="form-row">
             <button class="primary" id="btn-add-custom">Add Engine</button>
+            <button id="btn-reset-default" style="display:none">↺ Reset to Default URL</button>
+            <button id="btn-cancel-edit" style="display:none">Cancel</button>
             <span class="form-msg" id="cf-msg"></span>
         </div>
     </div>
