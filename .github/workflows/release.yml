@@ -32,13 +32,4 @@ jobs:
           files: |
             switch-search-engine-chrome.zip
             switch-search-engine-firefox.zip
-          body: |
-            ## Installation
-
-            **Chrome / Opera / Edge:**
-            1. Download `switch-search-engine-chrome.zip` and extract it
-            2. Go to `chrome://extensions` → Enable Developer mode → Load unpacked → select the extracted folder
-            3. Enable "Allow access to search page results" on the extensions page
-
-            **Firefox:**
-            Install from [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/switch-search-engine/) (once published).
+          body_path: RELEASE_NOTES.md
