@@ -1,15 +1,17 @@
-auto-save-list
-custom.el
-.org-id-locations
-\#*
-org-mode-config.el
-*~
-.#*
-\#*\#
-*.log
+# Build outputs
+*.zip
+*.xpi
+*.crx
+
+# OS
 .DS_Store
-org-clock-save.el
-emacs-config.el
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node (if build tools added later)
 node_modules/
-.directory
-/dist/*
+dist/

@@ -1,0 +1,83 @@
+{
+    "manifest_version": 2,
+    "name": "Switch Search Engine",
+    "version": "1.0.0",
+    "description": "Switch between search engines in one click. Supports custom engines.",
+    "applications": {
+        "gecko": {
+            "id": "{a1b2c3d4-e5f6-7890-abcd-ef1234567890}",
+            "strict_min_version": "61.0"
+        }
+    },
+    "icons": {
+        "16": "img/icon16.png",
+        "32": "img/icon32.png",
+        "48": "img/icon48.png",
+        "128": "img/icon128.png"
+    },
+    "background": {
+        "scripts": [
+            "common.js",
+            "background.js"
+        ]
+    },
+    "content_scripts": [
+        {
+            "run_at": "document_end",
+            "matches": [
+                "*://*.startpage.com/*",
+                "*://duckduckgo.com/*",
+                "*://*.ecosia.org/*",
+                "*://gibiru.com/*",
+                "*://metager.org/*",
+                "*://metager.de/*",
+                "*://you.com/*",
+                "*://www.onesearch.com/*",
+                "*://*.bing.com/*",
+                "*://search.brave.com/*",
+                "*://yandex.ru/*",
+                "*://yandex.com/*",
+                "*://www.google.com/*",
+                "*://search.yahoo.com/*",
+                "*://search.yahoo.co.jp/*",
+                "*://search.goo.ne.jp/*",
+                "*://en.wikipedia.org/*"
+            ],
+            "js": [
+                "common.js",
+                "content.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "tabs",
+        "storage"
+    ],
+    "web_accessible_resources": [
+        "img/engines/*",
+        "img/icon16.png",
+        "img/icon32.png",
+        "img/icon48.png",
+        "img/icon128.png",
+        "options.js"
+    ],
+    "commands": {
+        "_execute_browser_action": {
+            "suggested_key": {
+                "default": "Ctrl+Alt+S"
+            },
+            "description": "Switch to next search engine"
+        }
+    },
+    "options_ui": {
+        "page": "options.html",
+        "open_in_tab": true
+    },
+    "browser_action": {
+        "default_icon": {
+            "48": "img/icon48.png",
+            "128": "img/icon128.png"
+        },
+        "default_title": "Switch Search Engine"
+    }
+}

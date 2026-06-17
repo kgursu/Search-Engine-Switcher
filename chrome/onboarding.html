@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Switch Search Engine – Setup</title>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+    --bg:#1e2027; --bg2:#272a33; --bg3:#2f3240; --bd:#3d4255;
+    --fg:#d4d8e8; --fg2:#8b91aa; --accent:#5b8dee; --accent2:#7ba7f5;
+    --green:#5cb87a; --radius:8px; --font:system-ui,-apple-system,sans-serif;
+}
+body { background:var(--bg); color:var(--fg); font-family:var(--font); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:32px; }
+.card { background:var(--bg2); border:1px solid var(--bd); border-radius:12px; max-width:540px; width:100%; padding:40px; text-align:center; }
+.icon { width:80px; height:80px; margin:0 auto 24px; border-radius:20px; background:white; padding:8px; display:block; }
+h1 { font-size:22px; font-weight:700; margin-bottom:8px; }
+.subtitle { font-size:14px; color:var(--fg2); margin-bottom:28px; line-height:1.6; }
+.steps { text-align:left; background:var(--bg3); border:1px solid var(--bd); border-radius:var(--radius); padding:20px 24px; margin-bottom:28px; display:flex; flex-direction:column; gap:20px; }
+.step { display:flex; gap:14px; align-items:flex-start; }
+.step-num { background:var(--accent); color:#fff; border-radius:50%; width:26px; height:26px; min-width:26px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; margin-top:1px; }
+.step-text { font-size:13px; line-height:1.7; color:var(--fg); }
+.step-text strong { color:#fff; }
+.step-text .muted { color:var(--fg2); font-size:12px; display:block; margin-top:3px; }
+.highlight { background:var(--bg); border:1px solid var(--bd); border-radius:4px; padding:2px 7px; font-size:12px; font-family:monospace; color:var(--accent2); white-space:nowrap; }
+.info-box { background:var(--bg3); border-left:3px solid var(--accent); border-radius:0 var(--radius) var(--radius) 0; padding:14px 16px; margin-bottom:28px; text-align:left; font-size:13px; line-height:1.6; color:var(--fg2); }
+.info-box strong { color:var(--fg); }
+.btn-primary { display:flex; align-items:center; justify-content:center; background:var(--accent); color:#fff; border:none; border-radius:var(--radius); font-size:15px; font-weight:600; padding:13px 28px; cursor:pointer; transition:background .15s; width:100%; margin-bottom:12px; }
+.btn-primary:hover { background:var(--accent2); }
+.btn-primary.success { background:var(--green); cursor:default; }
+.status { font-size:13px; color:var(--fg2); min-height:20px; line-height:1.5; }
+.status.ok { color:var(--green); }
+</style>
+</head>
+<body>
+<div class="card">
+    <img class="icon" src="img/icon128.png" alt="Switch Search Engine">
+    <h1>Welcome to Switch Search Engine</h1>
+    <p class="subtitle">Two quick steps and you're ready to go.</p>
+
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">
+                <strong>Pin the extension to your toolbar</strong>
+                <span class="muted">Click the puzzle piece icon (🧩) in the toolbar → find <span class="highlight">Switch Search Engine</span> → click the pin icon.</span>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text">
+                <strong>Allow access to search pages</strong>
+                <span class="muted">Click the button below, then open the Extensions page and enable <span class="highlight">Allow access to search page results</span>.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <strong>How it works:</strong> When you click the toolbar icon on a search results page, your current query is automatically carried over to the next search engine in your list.
+    </div>
+
+    <button class="btn-primary" id="btn-open-ext">Open Extensions Page</button>
+    <div class="status" id="status"></div>
+</div>
+<script src="onboarding.js"></script>
+</body>
+</html>
